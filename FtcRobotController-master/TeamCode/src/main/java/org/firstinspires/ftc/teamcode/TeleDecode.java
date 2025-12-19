@@ -532,7 +532,7 @@ public class TeleDecode extends LinearOpMode {
             if (robot.turntableSlot < 6){
                 robot.turntableSlot += 1;
             } else {
-                gamepad2_runRumbleEffect(shortRumble);
+                gamepad2.runRumbleEffect(shortRumble);
             }
         } else if (gamepad2_l_bumper_now && !gamepad2_l_bumper_last){
             if (robot.turntableSlot > 1{
