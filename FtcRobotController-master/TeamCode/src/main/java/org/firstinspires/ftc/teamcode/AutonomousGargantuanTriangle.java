@@ -66,16 +66,42 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
     /*   6 Park in observation zone                                                              */
     /*--------------------------------------------------------------------------------------------*/
     private void mainAutonomous() {
-
+        startBackpedaling();
         
         // ensure motors are turned off even if we run out of time
         robot.driveTrainMotorsZero();
-
+        sleep(999999999);
     } // mainAutonomous
 
 //write movement functions
 
+    private void startBackpedaling () {
+        processPigChucker(1,0);
+        processTurntable(1);
 
+        sleep(3000);
+        //driveToPosition(-50,0,0,DRIVE_SPEED_20,TURN_SPEED_20,DRIVE_TO);
+        processKicker(true);
+        sleep(1000);
+        processKicker(false);
+        sleep(2000);
+
+        processTurntable(2);
+        sleep(1000);
+
+        processKicker(true);
+        sleep(1000);
+        processKicker(false);
+        sleep(2000);
+
+        processTurntable(3);
+        sleep(1000);
+
+        processKicker(true);
+        sleep(1000);
+        processKicker(false);
+
+    }
 
 
 
@@ -106,7 +132,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
        if (preset == 0){ //manual speed setting
            robot.pigChucker.setPower(power);
        } else if (preset == 1){
-           robot.pigChucker.setPower(.6);
+           robot.pigChucker.setPower(.63);
        } else if (preset == 2){
            robot.pigChucker.setPower(.75);
        }
@@ -115,14 +141,20 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
    private void processKicker(boolean up){
        robot.flipperUp = up;
        if (robot.flipperUp){
-           robot.flipperPos = .76;
+           robot.flipperPos = .3;
        } else {
-           robot.flipperPos = .35;
+           robot.flipperPos = .76;
        }
 
        robot.flipperServo.setPosition(robot.flipperPos);
    }
 
-
+   private void processIntake(boolean intake){
+       if(intake){
+           robot.intakeMotor.setPower(-1);
+       } else {
+           robot.intakeMotor.setPower(0);
+       }
+   }
 
 } /* AutonomousGargantuanTriangle */

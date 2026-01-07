@@ -430,9 +430,9 @@ public class TeleDecode extends LinearOpMode {
     } //encoderReset
     void processIntake(){
         if (gamepad2.right_trigger >= 0.03) {
-            robot.intakeMotor.setPower(gamepad2.right_trigger ); //forward
+            robot.intakeMotor.setPower(-gamepad2.right_trigger ); //forward
         } else if (gamepad2.left_trigger >= 0.03) {
-            robot.intakeMotor.setPower(-gamepad2.left_trigger ) ; //reverse
+            robot.intakeMotor.setPower(+gamepad2.left_trigger ) ; //reverse
         } else {
             robot.intakeMotor.setPower(0);
         }
@@ -537,8 +537,10 @@ public class TeleDecode extends LinearOpMode {
 
 
     void processKicker(){
-        if(gamepad2_dpad_down_now && !gamepad2_dpad_down_last){
-            robot.flipperUp = !robot.flipperUp;
+        if(gamepad2_dpad_down_now) {
+            robot.flipperUp = true;
+        } else {
+            robot.flipperUp = false;
         }
 
         if(robot.flipperUp){
