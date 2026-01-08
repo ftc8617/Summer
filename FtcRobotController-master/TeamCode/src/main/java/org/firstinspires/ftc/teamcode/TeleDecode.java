@@ -501,19 +501,7 @@ public class TeleDecode extends LinearOpMode {
 
 
 
-        if(robot.turntableSlot == 1){ //TODO: fill out all turntable positions with accurate doubles
-            robot.turntablePos = 0.031;
-        } else if (robot.turntableSlot == 2){
-            robot.turntablePos = 0.085;
-        } else if (robot.turntableSlot == 3){
-            robot.turntablePos = 0.133;
-        } else if (robot.turntableSlot == 4){
-            robot.turntablePos = 0.050;
-        } else if (robot.turntableSlot == 5){
-            robot.turntablePos = 0.100;
-        } else if (robot.turntableSlot == 6){
-            robot.turntablePos = 0.150;
-        }
+        robot.turntableUpdate(robot.turntableSlot);
 
 
         /*
@@ -544,9 +532,9 @@ public class TeleDecode extends LinearOpMode {
         }
 
         if(robot.flipperUp){
-            robot.flipperPos = .76;
-        } else if (!robot.flipperUp) {
             robot.flipperPos = 0.350;
+        } else if (!robot.flipperUp) {
+            robot.flipperPos = 0.76;
         }
 
         robot.flipperServo.setPosition(robot.flipperPos);

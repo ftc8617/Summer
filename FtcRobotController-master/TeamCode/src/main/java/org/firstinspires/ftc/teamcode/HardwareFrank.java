@@ -95,6 +95,8 @@ public class HardwareFrank
     public double  turntablePos   = 0; //TODO: fill out with turntable slot 1 position
     public int turntableSlot = 1;
 
+    public double turntableOffset = 0;
+
 
     public double  flipperPos = 0; // TODO: fill out default flipper position
     public boolean flipperUp = true;
@@ -266,7 +268,24 @@ public class HardwareFrank
         rearLeftMotor.setPower( rearLeft );
         rearRightMotor.setPower( rearRight );
     } // driveTrainMotors
+    public void turntableUpdate(int slot){
+        turntableSlot = slot;
 
+        if(turntableSlot == 1){ //TODO: fill out all turntable positions with accurate doubles
+            turntablePos = 0.028 + turntableOffset;
+        } else if (turntableSlot == 2){
+            turntablePos = 0.078 + turntableOffset; //.84 78
+        } else if (turntableSlot == 3){
+            turntablePos = 0.127 + turntableOffset; //.140
+        } else if (turntableSlot == 4){
+            turntablePos = 0.050 + turntableOffset;
+        } else if (turntableSlot == 5){
+            turntablePos = 0.100 + turntableOffset;
+        } else if (turntableSlot == 6){
+            turntablePos = 0.150 + turntableOffset;
+        }
+        turntableServo.setPosition(turntablePos);
+    }
     /*--------------------------------------------------------------------------------------------*/
     /* Set all 4 motor powers to drive straight FORWARD (Ex: +0.10) or REVERSE (Ex: -0.10)        */
     public void driveTrainFwdRev( double motorPower )

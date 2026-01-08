@@ -15,6 +15,7 @@ import java.util.Locale;
 public class AutonomousGargantuanTriangle extends AutonomousBase {
     boolean debugMode = false;
 
+    double tempOffset = 0;
     double pos_y=0, pos_x=0, pos_angle=0.0;  // Allows us to specify movement INCREMENTALLY, not ABSOLUTE
 
     @Override
@@ -33,16 +34,18 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
         // Wait for the game to start (driver presses PLAY).  While waiting, poll for options
         while (!isStarted()) {
             performEveryLoop();
+            captureGamepad1Buttons();
 
+            initTableTuning();
 
             // Check for operator input that changes Autonomous options
-            captureGamepad1Buttons();
-            // Do we need to preload a specimen?
+
 
              //  gamepad1_r_bumper
             telemetry.addLine("Initialized & Looping rn gang");
             String posStr = String.format(Locale.US, "{X,Y: %.1f, %.1f in  H: %.1f deg}", robotGlobalXCoordinatePosition, robotGlobalYCoordinatePosition,Math.toDegrees(robotOrientationRadians));
             telemetry.addData("Position", posStr);
+            telemetry.addData("Offset", "%.3f counts", robot.turntableOffset);
             telemetry.update();
             //pause brieefly before looping
             idle();
@@ -78,7 +81,16 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
     private void startBackpedaling () {
         processPigChucker(1,0);
         processTurntable(1);
-
+        processIntake(true);
+        robot.frontLeftMotor.setPower( -.4 );
+        robot.frontRightMotor.setPower( -.4  );
+        robot.rearLeftMotor.setPower( -.4 );
+        robot.rearRightMotor.setPower( -.4  );
+        sleep(2300);
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower( 0  );
+        robot.rearLeftMotor.setPower( 0 );
+        robot.rearRightMotor.setPower( 0 );
         sleep(3000);
         //driveToPosition(-50,0,0,DRIVE_SPEED_20,TURN_SPEED_20,DRIVE_TO);
         processKicker(true);
@@ -112,20 +124,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
    private void processTurntable(int slot){
        robot.turntableSlot = slot;
 
-       if(robot.turntableSlot == 1){ //TODO: fill out all turntable positions with accurate doubles
-           robot.turntablePos = 0.031;
-       } else if (robot.turntableSlot == 2){
-           robot.turntablePos = 0.085;
-       } else if (robot.turntableSlot == 3){
-           robot.turntablePos = 0.133;
-       } else if (robot.turntableSlot == 4){
-           robot.turntablePos = 0.050;
-       } else if (robot.turntableSlot == 5){
-           robot.turntablePos = 0.100;
-       } else if (robot.turntableSlot == 6){
-           robot.turntablePos = 0.150;
-       }
-       robot.turntableServo.setPosition(robot.turntablePos);
+       robot.turntableUpdate(slot);
    }
 
    private void processPigChucker(int preset, double power) {
@@ -155,6 +154,18 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
        } else {
            robot.intakeMotor.setPower(0);
        }
+   }
+
+   private void initTableTuning(){
+       tempOffset=0;
+       if(gamepad1_r_bumper_now && !gamepad1_r_bumper_last){
+           tempOffset += 0.002;
+       } else if (gamepad1_l_bumper_now && !gamepad1_l_bumper_last){
+           tempOffset -= 0.002;
+       }
+       robot.turntableOffset += tempOffset;
+       robot.turntableUpdate(1);
+
    }
 
 } /* AutonomousGargantuanTriangle */
