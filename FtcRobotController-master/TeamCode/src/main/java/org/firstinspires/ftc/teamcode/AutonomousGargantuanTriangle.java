@@ -80,19 +80,35 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
 
     private void startBackpedaling () {
         processPigChucker(1,0);
+        processIntake(false);
+        sleep(500);
         processTurntable(1);
         processIntake(true);
-        robot.frontLeftMotor.setPower( -.4 );
-        robot.frontRightMotor.setPower( -.4  );
-        robot.rearLeftMotor.setPower( -.4 );
-        robot.rearRightMotor.setPower( -.4  );
-        sleep(2300);
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower( 0  );
-        robot.rearLeftMotor.setPower( 0 );
-        robot.rearRightMotor.setPower( 0 );
+        processForward(-.4);
+        sleep(2100);
+        processForward(0);
         sleep(3000);
         //driveToPosition(-50,0,0,DRIVE_SPEED_20,TURN_SPEED_20,DRIVE_TO);
+        shootThree();
+        sleep(500);
+        /*
+        robot.frontLeftMotor.setPower(-0.4);
+        robot.frontRightMotor.setPower(0.4);
+        robot.rearLeftMotor.setPower(0.4);
+        robot.rearRightMotor.setPower(0.4);
+        sleep(1000);
+        */
+        processForward(0);
+    }
+
+    private void processForward(double power) {
+        robot.frontLeftMotor.setPower(power);
+        robot.frontRightMotor.setPower(power);
+        robot.rearLeftMotor.setPower(power);
+        robot.rearRightMotor.setPower(power);
+    }
+
+    private void shootThree() {
         processKicker(true);
         sleep(1000);
         processKicker(false);
@@ -112,11 +128,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
         processKicker(true);
         sleep(1000);
         processKicker(false);
-
     }
-
-
-
 
     /*--------------------------------------------------------------------------------------------*/
 

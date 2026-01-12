@@ -316,9 +316,9 @@ public class TeleDecode extends LinearOpMode {
 
         // Retrieve X/Y and ROTATION joystick input
         if( controlMultSegLinear ) {
-            yTranslation = multSegLinearXY( .7 * -gamepad1.left_stick_y );
-            xTranslation = multSegLinearXY(  .7 * gamepad1.left_stick_x );
-            rotation     = multSegLinearRot( .6  * -gamepad1.right_stick_x );
+            yTranslation = multSegLinearXY( .9 * -gamepad1.left_stick_y );
+            xTranslation = multSegLinearXY(  .9 * gamepad1.left_stick_x );
+            rotation     = multSegLinearRot( .9  * -gamepad1.right_stick_x );
 
         }
         else {
