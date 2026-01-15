@@ -444,7 +444,7 @@ public class TeleDecode extends LinearOpMode {
             robot.pigChucker.setPower(0.63);
             robot.pigSpinning = true;
         } else if (gamepad1_square_now){
-            robot.pigChucker.setPower(0.3);
+            robot.pigChucker.setPower(0.75);
             robot.pigSpinning = true;
         } else if(gamepad1_cross_now){
             robot.pigChucker.setPower(0);
@@ -456,7 +456,7 @@ public class TeleDecode extends LinearOpMode {
             robot.pigChucker.setPower(0.63);
             robot.pigSpinning = true;
         } else if (gamepad2_square_now){
-            robot.pigChucker.setPower(0.3);
+            robot.pigChucker.setPower(0.75);
             robot.pigSpinning = true;
         } else if(gamepad2_cross_now){
             robot.pigChucker.setPower(0);

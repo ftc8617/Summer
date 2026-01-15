@@ -70,7 +70,7 @@ public abstract class AutonomousBase extends LinearOpMode {
      * @return
      */
     public double AngleWrapRadians( double angleRadians ){
-        while( angleRadians < -Math.PI ) {
+        while( angleRadians < -Math.PI ){
             angleRadians += 2.0*Math.PI;
         }
         while( angleRadians > Math.PI ){
