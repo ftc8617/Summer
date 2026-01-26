@@ -37,6 +37,12 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
             captureGamepad1Buttons();
 
             initTableTuning();
+            if(gamepad1_dpad_right_now && !gamepad1_dpad_right_last){
+                robot.turntableSlot += 1;
+            } else if (gamepad1_dpad_left_now && !gamepad1_dpad_left_last){
+                robot.turntableSlot -= 1;
+            }
+            robot.turntableUpdate(robot.turntableSlot);
 
             // Check for operator input that changes Autonomous options
 
@@ -80,24 +86,16 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
 
     private void startBackpedaling () {
         processPigChucker(1,0);
-        processIntake(false);
-        sleep(500);
         processTurntable(1);
         sleep(1000);
         processIntake(true);
         //driveStraight(-.4);
-        //driveToPosition(0,5,0,DRIVE_SPEED_20,TURN_SPEED_20,DRIVE_TO);
-
-        sleep(2100);
-        //driveStraight(0);
-        sleep(3000);
+        if (opModeIsActive()) {
+            driveToXY(-40, 0, 0, DRIVE_SPEED_20,
+                    DRIVE_TO);
+        }
         shootThree();
         sleep(500);
-        robot.frontLeftMotor.setPower(-0.4);
-        robot.frontRightMotor.setPower(0.4);
-        robot.rearLeftMotor.setPower(0.4);
-        robot.rearRightMotor.setPower(0.4);
-        sleep(400);
         driveStraight(0);
     }
 
@@ -109,8 +107,27 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
     }
 
     private void shootThree() {
+        processKicker(false);
         processTurntable(1);
-        sleep(1400);;
+        sleep(500);
+        processKicker(true);
+        sleep(500);
+        processKicker(false);
+        sleep(100);
+        processTurntable(2);
+        sleep(500);
+        processKicker(true);
+        sleep(500);
+        processKicker(false);
+        sleep(200);
+        processTurntable(3);
+        sleep(500);
+        processKicker(true);
+        processKicker(false);
+
+        /*
+        processTurntable(1);
+        sleep(1400);
         processKicker(true);
         sleep(1400);
         processKicker(false);
@@ -126,10 +143,10 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
 
         processTurntable(3);
         sleep(1400);
-
         processKicker(true);
         sleep(1000);
         processKicker(false);
+        */
     }
 
     /*--------------------------------------------------------------------------------------------*/
@@ -171,7 +188,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
    }
 
    private void initTableTuning(){
-       tempOffset=0;
+       tempOffset = 0;
        if(gamepad1_r_bumper_now && !gamepad1_r_bumper_last){
            tempOffset += 0.002;
        } else if (gamepad1_l_bumper_now && !gamepad1_l_bumper_last){

@@ -46,6 +46,10 @@ public class TeleDecode extends LinearOpMode {
     double  rearLeft, rearRight, frontLeft, frontRight, maxPower;  /* Motor power levels */
     boolean controlMultSegLinear = true;
 
+    // ---------- Turntable slow movement ----------
+    double turntableTargetPos = 0.0;
+
+
     long      nanoTimeCurr=0, nanoTimePrev=0;
     double    elapsedTime, elapsedHz;
 
@@ -171,7 +175,7 @@ public class TeleDecode extends LinearOpMode {
 
             telemetry.addData("Kicker ", "%.3f counts", robot.flipperPos);
             telemetry.addData("Turntable ", "%.3f counts", robot.turntablePos);
-            
+
             telemetry.addData("CycleTime", "%.1f msec (%.1f Hz)", elapsedTime, elapsedHz );
             telemetry.addData("version","103");
             telemetry.update();
@@ -499,10 +503,22 @@ public class TeleDecode extends LinearOpMode {
         //2i = 5o
         //3i = 6o
 
-
-
         robot.turntableUpdate(robot.turntableSlot);
 
+        // Save the desired position as a TARGET
+        turntableTargetPos = robot.turntablePos;
+
+        // Slowly move current position toward target
+        double error = turntableTargetPos - robot.turntableServo.getPosition();
+
+        if (Math.abs(error) > robot.turntableStep) {
+            robot.turntablePos = robot.turntableServo.getPosition()
+                    + Math.signum(error) * robot.turntableStep;
+        } else {
+            robot.turntablePos = turntableTargetPos;
+        }
+
+        robot.turntableServo.setPosition(robot.turntablePos);
 
         /*
         if (gamepad2_r_bumper_now){
@@ -520,7 +536,6 @@ public class TeleDecode extends LinearOpMode {
         }
         */
 
-        robot.turntableServo.setPosition(robot.turntablePos);
     } //processTurntable
 
 

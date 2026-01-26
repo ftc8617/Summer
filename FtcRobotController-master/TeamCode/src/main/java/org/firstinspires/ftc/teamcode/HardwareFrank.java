@@ -97,7 +97,7 @@ public class HardwareFrank
 
     public double turntableOffset = 0;
 
-
+    public double turntableStep = 0.003;
     public double  flipperPos = 0; // TODO: fill out default flipper position
     public boolean flipperUp = true;
 
@@ -272,17 +272,17 @@ public class HardwareFrank
         turntableSlot = slot;
 
         if(turntableSlot == 1){ //TODO: fill out all turntable positions with accurate doubles
-            turntablePos = 0.028 + turntableOffset;
+            turntablePos = 0.619 + turntableOffset;
         } else if (turntableSlot == 2){
-            turntablePos = 0.078 + turntableOffset; //.84 78
+            turntablePos = 0.370 + turntableOffset; //.84 78
         } else if (turntableSlot == 3){
-            turntablePos = 0.127 + turntableOffset; //.140
+            turntablePos = 0.121 + turntableOffset; //.140
         } else if (turntableSlot == 4){
-            turntablePos = 0.050 + turntableOffset;
+            turntablePos = 0.99 + turntableOffset;
         } else if (turntableSlot == 5){
-            turntablePos = 0.100 + turntableOffset;
+            turntablePos = 0.747 + turntableOffset;
         } else if (turntableSlot == 6){
-            turntablePos = 0.150 + turntableOffset;
+            turntablePos = 0.5 + turntableOffset;
         }
         turntableServo.setPosition(turntablePos);
     }
