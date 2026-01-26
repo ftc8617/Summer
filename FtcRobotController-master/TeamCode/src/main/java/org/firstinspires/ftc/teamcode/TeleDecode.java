@@ -506,17 +506,6 @@ public class TeleDecode extends LinearOpMode {
         robot.turntableUpdate(robot.turntableSlot);
 
         // Save the desired position as a TARGET
-        turntableTargetPos = robot.turntablePos;
-
-        // Slowly move current position toward target
-        double error = turntableTargetPos - robot.turntableServo.getPosition();
-
-        if (Math.abs(error) > robot.turntableStep) {
-            robot.turntablePos = robot.turntableServo.getPosition()
-                    + Math.signum(error) * robot.turntableStep;
-        } else {
-            robot.turntablePos = turntableTargetPos;
-        }
 
         robot.turntableServo.setPosition(robot.turntablePos);
 

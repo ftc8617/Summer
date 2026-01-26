@@ -85,7 +85,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
 //write movement functions
 
     private void startBackpedaling () {
-        processPigChucker(1,0);
+        processPigChucker(0,0.56);
         processTurntable(1);
         sleep(1000);
         processIntake(true);
@@ -94,6 +94,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
             driveToXY(-40, 0, 0, DRIVE_SPEED_20,
                     DRIVE_TO);
         }
+        sleep(800);
         shootThree();
         sleep(500);
         driveStraight(0);
@@ -123,6 +124,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
         processTurntable(3);
         sleep(500);
         processKicker(true);
+        sleep(300);
         processKicker(false);
 
         /*

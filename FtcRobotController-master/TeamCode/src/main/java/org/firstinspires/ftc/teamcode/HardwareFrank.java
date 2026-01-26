@@ -97,7 +97,6 @@ public class HardwareFrank
 
     public double turntableOffset = 0;
 
-    public double turntableStep = 0.003;
     public double  flipperPos = 0; // TODO: fill out default flipper position
     public boolean flipperUp = true;
 
@@ -228,6 +227,14 @@ public class HardwareFrank
         tiltAngle = angles.secondAngle;
         return -headingAngle;  // degrees (+90 is CW; -90 is CCW)
     } // headingIMU
+
+//    public void turnToHeading(double targetAngle, double maxPower) {
+//        double kp = 0.01;
+//
+//        while (opModeIsActive()) {
+//            double currentAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+//        }
+//    }
 
     /*--------------------------------------------------------------------------------------------*/
     public void readBulkData() {
