@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * <X,Y> position to remain constant as we navigate if we rotate to a new angle.
  */
 @TeleOp(name = "Pinpoint Odo Offsets", group = "Test")
-//@Disabled
+
 public class TestPinpointOffsets extends LinearOpMode {
 
     //====== GOBILDA PINPOINT ODOMETRY COMPUTER ======
@@ -28,17 +29,17 @@ public class TestPinpointOffsets extends LinearOpMode {
     DcMotorEx rearLeftMotor   = null;
     DcMotorEx rearRightMotor  = null;
 
+    double  currXinches=0.0, currYinches=0.0, currAngle=0.0;
+    double  prevXinches=0.0, prevYinches=0.0, prevAngle=0.0;
+    double  minXinches=0.0,  maxXinches=0.0,  minYinches=0.0, maxYinches=0.0;
+    double  startXradius = 0.0, startYradius = 0.0, startErrorRadius = 0.0; // mm
+    double  currXradius  = 0.0, currYradius  = 0.0, currErrorRadius = 0.0;// mm
+    double  startXoffset = 0.0, startYoffset = 0.0; // mm
+
     // Once the program has determined x/y offsets, those values can be saved in
     // the hardware initialization routine, and this flag can be togged to TRUE
     // to make the program skip the initial setup and go straight to the fine-tuning
     boolean fineTuneOnly = true;
-    
-    double  currXinches=0.0, currYinches=0.0, currAngle=0.0;
-    double  prevXinches=0.0, prevYinches=0.0, prevAngle=0.0;
-    double  minXinches=0.0, maxXinches=0.0, minYinches=0.0, maxYinches=0.0;
-    double  startXradius = 0.0, startYradius = 0.0, startErrorRadius = 0.0; // mm
-    double  currXradius  = 0.0, currYradius  = 0.0, currErrorRadius = 0.0;// mm
-    double  startXoffset = 0.0, startYoffset = 0.0; // mm
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -94,33 +95,32 @@ public class TestPinpointOffsets extends LinearOpMode {
     void initializeHardware() {
  
         // Locate the odometry controller in our hardware settings
-        odom = hardwareMap.get(GoBildaPinpointDriver.class,"odom");   // Control Hub I2C port 3
+        odom = hardwareMap.get(GoBildaPinpointDriver.class,"odom");   // Expansion Hub I2C port 1
         if( fineTuneOnly ) { // assume we've run this before and only need to fine-tune
-           odom.setOffsets(-12.17, +103);  // odometry pod x,y offsets relative center of robot
-           startXoffset = -12.17; // mm
-           startYoffset =  +103; // mm
+           odom.setOffsets(-84.88, -169.47, DistanceUnit.MM);  // odometry pod x,y offsets relative center of robot
+           startXoffset = 0.98; // mm
+           startYoffset = 104.12; // mm
         } else { // assume we're starting with complete unknowns
-           odom.setOffsets( 0.0, 0.0 );       // odometry pod x,y offsets relative center of robot
+           odom.setOffsets( 0.0, 0.0, DistanceUnit.MM);      // odometry pod x,y offsets relative center of robot
            startXoffset = 0.0; // mm
            startYoffset = 0.0; // mm
         }
         odom.setEncoderResolution( GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD );
-        odom.setEncoderDirections( GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                                   GoBildaPinpointDriver.EncoderDirection.FORWARD );
+        odom.setEncoderDirections( GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                                   GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odom.resetPosAndIMU();
 
         // Query hardware info
-        frontLeftMotor  = hardwareMap.get(DcMotorEx.class,"leftFront");  // Control Hub port 1 (REVERSE)
-        frontRightMotor = hardwareMap.get(DcMotorEx.class,"rightFront"); // Control Hub port 2 (forward)
-        rearLeftMotor   = hardwareMap.get(DcMotorEx.class,"leftBack");   // Control Hub port 0 (REVERSE)
-        rearRightMotor  = hardwareMap.get(DcMotorEx.class,"rightBack");  // Control Hub port 3 (forward)
+        frontLeftMotor  = hardwareMap.get(DcMotorEx.class,"leftFront");  // FORWARD
+        frontRightMotor = hardwareMap.get(DcMotorEx.class,"rightFront"); // reverse
+        rearLeftMotor   = hardwareMap.get(DcMotorEx.class,"leftBack");   // FORWARD
+        rearRightMotor  = hardwareMap.get(DcMotorEx.class,"rightBack");  // reverse
 
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);  // goBilda fwd/rev opposite of Matrix motors!
+        // Set motor position-power direction
+        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotor.Direction.REVERSE);
-
-
 
         // Set all drivetrain motors to zero power
         driveTrainMotorsZero();
@@ -163,9 +163,9 @@ public class TestPinpointOffsets extends LinearOpMode {
         prevXinches = currXinches;
         prevYinches = currYinches;
         prevAngle   = currAngle;
-        // Shift drivetrain FORWARD at 25% power for 1/2 second
-        driveTrainFwdRev( 0.25 );
-        sleep(500 );  // 500 msec
+        // Shift drivetrain LEFT at 25% power for 1/2 second
+        driveTrainLeftRight( 0.25 );
+        sleep(500);  // 500 msec
         driveTrainMotorsZero();
         // Note our new position
         readPinpointUpdateVariables();
@@ -203,8 +203,8 @@ public class TestPinpointOffsets extends LinearOpMode {
         prevXinches = currXinches;
         prevYinches = currYinches;
         prevAngle   = currAngle;
-        // Shift drivetrain RIGHT at 25% power for 1/2 second
-        driveTrainRightLeft( 0.25 );
+        // Shift drivetrain FWD at 25% power for 1/2 second
+        driveTrainFwdRev( 0.25 );
         sleep(500 );  // 500 msec
         driveTrainMotorsZero();
         // Note our new position
@@ -410,7 +410,7 @@ public class TestPinpointOffsets extends LinearOpMode {
         // Instruct the Pinpoint computer to update the current position
         odom.update();
         Pose2D pos = odom.getPosition();  // x,y pos in inch; heading in degrees
-        // Update our local variables
+        // Update our local variables for POSITION
         currXinches = pos.getX(DistanceUnit.INCH);
         currYinches = pos.getY(DistanceUnit.INCH);
         currAngle   = pos.getHeading(AngleUnit.DEGREES);
@@ -513,7 +513,7 @@ public class TestPinpointOffsets extends LinearOpMode {
     } // checkWithUser
 
     /*--------------------------------------------------------------------------------------------*/
-    /* Set all 4 motor powers to drive straight FORWARD (Ex: +0.10) or REVERSE (Ex: -0.10)        */
+    /* Set all 4 motor powers to drive +X straight FORWARD (Ex: +0.10) or REVERSE (Ex: -0.10)     */
     public void driveTrainFwdRev( double motorPower )
     {
         frontLeftMotor.setPower(  motorPower );
@@ -523,14 +523,14 @@ public class TestPinpointOffsets extends LinearOpMode {
     } // driveTrainFwdRev
 
     /*--------------------------------------------------------------------------------------------*/
-    /* Set all 4 motor powers to strafe RIGHT (Ex: +0.10) or LEFT (Ex: -0.10)                     */
-    public void driveTrainRightLeft( double motorPower )
+    /* Set all 4 motor powers to strafe +Y LEFT (Ex: +0.10) or LEFT (Ex: -0.10)                     */
+    public void driveTrainLeftRight( double motorPower )
     {
-        frontLeftMotor.setPower(   motorPower );
-        frontRightMotor.setPower( -motorPower );
-        rearLeftMotor.setPower(   -motorPower );
-        rearRightMotor.setPower(   motorPower );
-    } // driveTrainRightLeft
+        frontLeftMotor.setPower(  -motorPower );
+        frontRightMotor.setPower(  motorPower );
+        rearLeftMotor.setPower(    motorPower );
+        rearRightMotor.setPower(  -motorPower );
+    } // driveTrainLeftRight
 
     /*--------------------------------------------------------------------------------------------*/
     /* Set all 4 motor powers to turn clockwise (Ex: +0.10) or counterclockwise (Ex: -0.10)       */

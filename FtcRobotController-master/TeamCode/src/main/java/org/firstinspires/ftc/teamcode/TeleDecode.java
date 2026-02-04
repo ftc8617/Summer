@@ -8,7 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.Locale;
@@ -66,6 +69,33 @@ public class TeleDecode extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareFrank robot = new HardwareFrank();
+
+    public void turnToHeading(double targetAngle, double maxPower) {
+        double kP = 0.01;
+
+        double error;
+        double turnPower;
+
+        while (opModeIsActive()) {
+            double currentAngle = robot.headingIMU();
+            error = robot.angleWrap(targetAngle - currentAngle);
+
+            if(Math.abs(error) < 1.0) {
+                break;
+            }
+
+            turnPower = error * kP;
+            turnPower = Math.max(-maxPower, Math.min(turnPower, maxPower));
+
+            robot.frontLeftMotor.setPower(-turnPower);
+            robot.rearLeftMotor.setPower(-turnPower);
+            robot.frontRightMotor.setPower(turnPower);
+            robot.rearRightMotor.setPower(turnPower);
+        }
+
+        robot.stopMotion();
+    }
+
 
     @Override
     public void runOpMode() throws InterruptedException {

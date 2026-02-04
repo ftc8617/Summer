@@ -95,7 +95,7 @@ public class HardwareFrank
     public double  turntablePos   = 0; //TODO: fill out with turntable slot 1 position
     public int turntableSlot = 1;
 
-    public double turntableOffset = 0;
+    public double turntableOffset = -0.144;
 
     public double  flipperPos = 0; // TODO: fill out default flipper position
     public boolean flipperUp = true;
@@ -129,7 +129,7 @@ public class HardwareFrank
         odom = hwMap.get(GoBildaPinpointDriver.class,"odom"); //Control Hub I2C port 3
         odom.setOffsets(-12.17, 103);   // odometry pod x,y locations [mm] relative to center of robot
         odom.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD ); // 4bar pods
-        odom.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+        odom.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                                   GoBildaPinpointDriver.EncoderDirection.FORWARD);
         if( isAutonomous ) {
             odom.resetPosAndIMU();
@@ -228,21 +228,21 @@ public class HardwareFrank
         return -headingAngle;  // degrees (+90 is CW; -90 is CCW)
     } // headingIMU
 
-//    public void turnToHeading(double targetAngle, double maxPower) {
-//        double kp = 0.01;
-//
-//        while (opModeIsActive()) {
-//            double currentAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//        }
+    /*--------------------------------------------------------------------------------------------*/
+
 //    }
 
-    /*--------------------------------------------------------------------------------------------*/
+    public double angleWrap(double degrees) {
+        while(degrees > 180) { degrees -= 360; }
+        while(degrees < -180) { degrees += 360; }
+        return degrees;
+    }
     public void readBulkData() {
         // For MANUAL mode, we must clear the BulkCache once per control cycle
         expansionHub.clearBulkCache();
         controlHub.clearBulkCache();
         // Get a fresh set of values for this cycle
-        //   getCurrentPosition() / getTargetPosition() / getTargetPositionTolerance()
+        //getCurrentPosition() / getTargetPosition() / getTargetPositionTolerance()
         //   getPower() / getVelocity() / getCurrent()
         //===== CONTROL HUB VALUES =====
         frontLeftMotorPos  = frontLeftMotor.getCurrentPosition();
@@ -253,7 +253,7 @@ public class HardwareFrank
         rearRightMotorVel  = rearRightMotor.getVelocity();
         rearLeftMotorPos   = rearLeftMotor.getCurrentPosition();
         rearLeftMotorVel   = rearLeftMotor.getVelocity();
-        pigChuckerPos     = pigChucker.getCurrentPosition();
+        pigChuckerPos      = pigChucker.getCurrentPosition();
         intakeMotorPos     = intakeMotor.getCurrentPosition();
     } // readBulkData
 

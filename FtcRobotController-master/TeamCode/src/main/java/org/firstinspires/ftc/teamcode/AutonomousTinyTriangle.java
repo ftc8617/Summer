@@ -4,17 +4,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
 import java.util.Locale;
 
-@Autonomous(name="Big Triangle Auto", group="8617", preselectTeleOp = "TeleDecode")
+@Autonomous(name="Small Triangle Auto", group="8617", preselectTeleOp = "TeleDecode")
 //@Disabled
-public class AutonomousGargantuanTriangle extends AutonomousBase {
+public class AutonomousTinyTriangle extends AutonomousBase {
 
     public void turnToHeading(double targetAngle, double maxPower) {
         double kP = 0.01;
@@ -44,6 +38,8 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
     boolean debugMode = false;
 
     int startDelay = 0;
+
+    boolean blue = true; // true is blue, false is red
     double tempOffset = 0;
     double pos_y=0, pos_x=0, pos_angle=0.0;  // Allows us to specify movement INCREMENTALLY, not ABSOLUTE
 
@@ -79,6 +75,10 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
                 startDelay -= 1000;
             }
 
+            if(gamepad1_circle_last && !gamepad1_circle_now){
+                blue = !blue;
+            }
+
             // Check for operator input that changes Autonomous options
 
 
@@ -88,6 +88,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
             telemetry.addData("Position", posStr);
             telemetry.addData("Offset", "%.3f counts", robot.turntableOffset);
             telemetry.addData("Start Delay", "%d ms", startDelay);
+            telemetry.addData("Blue Side", "%b", blue);
             telemetry.update();
             //pause brieefly before looping
             idle();
@@ -112,8 +113,8 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
     /*--------------------------------------------------------------------------------------------*/
     private void mainAutonomous() {
         sleep(startDelay);
+        strafeAndShoot();
 
-        startBackpedaling();
         
         // ensure motors are turned off even if we run out of time
         robot.driveTrainMotorsZero();
@@ -122,17 +123,19 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
 
 //write movement functions
 
-    private void startBackpedaling () {
-        processPigChucker(0,0.55);
+    private void strafeAndShoot () {
+        processPigChucker(2,0);
         processTurntable(1);
-        driveStraight(-.5);
-        sleep(1600);
+        if (blue){
+            strafe(1,2);
+        } else {
+            strafe(1,1);
+        }
+        sleep(420);
         driveStraight(0);
         sleep(5000);
         shootThree();
         sleep(1000);
-        driveStraight(0.5);
-        sleep(800);
         driveStraight(0);
         //sleep(500);
     }
@@ -217,7 +220,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
        } else if (preset == 1){
            robot.pigChucker.setPower(.63);
        } else if (preset == 2){
-           robot.pigChucker.setPower(.75);
+           robot.pigChucker.setPower(.72);
        }
    }
 
