@@ -123,7 +123,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
 //write movement functions
 
     private void startBackpedaling () {
-        processPigChucker(0,0.55);
+        processPigChucker(0,0.60);
         processTurntable(1);
         driveStraight(-.5);
         sleep(1600);
@@ -215,7 +215,7 @@ public class AutonomousGargantuanTriangle extends AutonomousBase {
        if (preset == 0){ //manual speed setting
            robot.pigChucker.setPower(power);
        } else if (preset == 1){
-           robot.pigChucker.setPower(.63);
+           robot.pigChucker.setPower(.72);
        } else if (preset == 2){
            robot.pigChucker.setPower(.75);
        }

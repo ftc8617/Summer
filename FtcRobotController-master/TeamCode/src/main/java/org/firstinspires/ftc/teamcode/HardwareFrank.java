@@ -95,7 +95,7 @@ public class HardwareFrank
     public double  turntablePos   = 0; //TODO: fill out with turntable slot 1 position
     public int turntableSlot = 1;
 
-    public double turntableOffset = -0.144;
+    public double turntableOffset = 0.018;
 
     public double  flipperPos = 0; // TODO: fill out default flipper position
     public boolean flipperUp = true;

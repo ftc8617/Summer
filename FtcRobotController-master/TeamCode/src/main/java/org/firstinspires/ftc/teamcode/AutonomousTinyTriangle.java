@@ -126,14 +126,23 @@ public class AutonomousTinyTriangle extends AutonomousBase {
     private void strafeAndShoot () {
         processPigChucker(2,0);
         processTurntable(1);
-        if (blue){
-            strafe(1,2);
+        /*if (blue){
+            strafe(.3,2);
         } else {
-            strafe(1,1);
-        }
-        sleep(420);
+            strafe(.3,1);
+        }*/
+        driveStraight(.4);
+        sleep(250);
         driveStraight(0);
-        sleep(5000);
+        if (blue) {
+            turn(.2,1);
+            sleep(515);
+        } else {
+            turn(.2,2);
+            sleep(515);
+        }
+        driveStraight(0);
+        sleep(8000);
         shootThree();
         sleep(1000);
         driveStraight(0);
@@ -160,6 +169,21 @@ public class AutonomousTinyTriangle extends AutonomousBase {
             robot.rearRightMotor.setPower(power);
         }
     }
+    private void turn(double power, int direction){ //1 is left, 2 is right
+        if (direction == 1){ //left
+            robot.frontLeftMotor.setPower(-power);
+            robot.rearLeftMotor.setPower(-power);
+
+            robot.frontRightMotor.setPower(power);
+            robot.rearRightMotor.setPower(power);
+        } else {
+            robot.frontLeftMotor.setPower(power);
+            robot.rearLeftMotor.setPower(power);
+
+            robot.frontRightMotor.setPower(-power);
+            robot.rearRightMotor.setPower(-power);
+        }
+    }
 
     private void shootThree() {
         processKicker(false);
@@ -168,17 +192,17 @@ public class AutonomousTinyTriangle extends AutonomousBase {
         processKicker(true);
         sleep(500);
         processKicker(false);
-        sleep(100);
+        sleep(500);
         processTurntable(2);
         sleep(500);
         processKicker(true);
         sleep(500);
         processKicker(false);
-        sleep(200);
+        sleep(500);
         processTurntable(3);
         sleep(500);
         processKicker(true);
-        sleep(300);
+        sleep(500);
         processKicker(false);
 
         /*
