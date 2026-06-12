@@ -33,7 +33,7 @@ public class HardwareFrank
     protected BNO055IMU imu    = null;
     public double headingAngle = 0.0;
     public double tiltAngle    = 0.0;
-    //protected GoBildaPinpointDriver odom = null;
+    protected GoBildaPinpointDriver odom = null;
 
     //====== MECANUM DRIVETRAIN MOTORS (RUN_USING_ENCODER) =====
     protected DcMotorEx frontLeftMotor     = null;
@@ -95,6 +95,7 @@ public class HardwareFrank
     public double  turntablePos   = 0; //TODO: fill out with turntable slot 1 position
     public int turntableSlot = 1;
 
+    public double turntableOffset = 0.018;
 
     public double  flipperPos = 0; // TODO: fill out default flipper position
     public boolean flipperUp = true;
@@ -124,16 +125,16 @@ public class HardwareFrank
 
         //====== GOBILDA PINPOINT ODOMETRY COMPUTER ======
         // Locate the odometry controller in our hardware settings
-        /*
+
         odom = hwMap.get(GoBildaPinpointDriver.class,"odom"); //Control Hub I2C port 3
-        odom.setOffsets(111.23, 36.73);   // odometry pod x,y locations [mm] relative to center of robot
+        odom.setOffsets(-12.17, 103);   // odometry pod x,y locations [mm] relative to center of robot
         odom.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD ); // 4bar pods
-        odom.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+        odom.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                                   GoBildaPinpointDriver.EncoderDirection.FORWARD);
         if( isAutonomous ) {
             odom.resetPosAndIMU();
         }
-                 */
+
 
         // Define and Initialize drivetrain motors
         frontLeftMotor  = hwMap.get(DcMotorEx.class,"leftFront");  // Control Hub port 1 (REVERSE)
@@ -141,9 +142,9 @@ public class HardwareFrank
         rearLeftMotor   = hwMap.get(DcMotorEx.class,"leftBack");   // Control Hub port 0 (REVERSE)
         rearRightMotor  = hwMap.get(DcMotorEx.class,"rightBack");  // Control Hub port 3 (forward)
 
-        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);  // goBilda fwd/rev opposite of Matrix motors!
-        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        rearLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);  // goBilda fwd/rev opposite of Matrix motors!
+        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        rearLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all drivetrain motors to zero power
@@ -183,7 +184,7 @@ public class HardwareFrank
         pigChucker.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Initialize robot hardware (autonomous=true initializes servos)
-        turntableServo   = hwMap.get(Servo.class,"turntable");            // servo port 0 (Expansion Hub)
+        turntableServo   = hwMap.get(Servo.class,"turntable");// servo port 0 (Expansion Hub)
         flipperServo = hwMap.get(Servo.class,"flipper");          // servo port 1 (Expansion Hub)
 
     } /* init */
@@ -192,6 +193,8 @@ public class HardwareFrank
     public void resetEncoders() { //TODO: Set init values
         turntablePos   = 0.500;     turntableServo.setPosition(turntablePos); //set init value
        flipperPos = 0.600;    flipperServo.setPosition(flipperPos);
+
+
 
        pigChucker.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        pigChucker.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -226,12 +229,20 @@ public class HardwareFrank
     } // headingIMU
 
     /*--------------------------------------------------------------------------------------------*/
+
+//    }
+
+    public double angleWrap(double degrees) {
+        while(degrees > 180) { degrees -= 360; }
+        while(degrees < -180) { degrees += 360; }
+        return degrees;
+    }
     public void readBulkData() {
         // For MANUAL mode, we must clear the BulkCache once per control cycle
         expansionHub.clearBulkCache();
         controlHub.clearBulkCache();
         // Get a fresh set of values for this cycle
-        //   getCurrentPosition() / getTargetPosition() / getTargetPositionTolerance()
+        //getCurrentPosition() / getTargetPosition() / getTargetPositionTolerance()
         //   getPower() / getVelocity() / getCurrent()
         //===== CONTROL HUB VALUES =====
         frontLeftMotorPos  = frontLeftMotor.getCurrentPosition();
@@ -242,7 +253,7 @@ public class HardwareFrank
         rearRightMotorVel  = rearRightMotor.getVelocity();
         rearLeftMotorPos   = rearLeftMotor.getCurrentPosition();
         rearLeftMotorVel   = rearLeftMotor.getVelocity();
-        pigChuckerPos     = pigChucker.getCurrentPosition();
+        pigChuckerPos      = pigChucker.getCurrentPosition();
         intakeMotorPos     = intakeMotor.getCurrentPosition();
     } // readBulkData
 
@@ -264,7 +275,24 @@ public class HardwareFrank
         rearLeftMotor.setPower( rearLeft );
         rearRightMotor.setPower( rearRight );
     } // driveTrainMotors
+    public void turntableUpdate(int slot){
+        turntableSlot = slot;
 
+        if(turntableSlot == 1){ //TODO: fill out all turntable positions with accurate doubles
+            turntablePos = 0.619 + turntableOffset;
+        } else if (turntableSlot == 2){
+            turntablePos = 0.370 + turntableOffset; //.84 78
+        } else if (turntableSlot == 3){
+            turntablePos = 0.121 + turntableOffset; //.140
+        } else if (turntableSlot == 4){
+            turntablePos = 0.99 + turntableOffset;
+        } else if (turntableSlot == 5){
+            turntablePos = 0.747 + turntableOffset;
+        } else if (turntableSlot == 6){
+            turntablePos = 0.5 + turntableOffset;
+        }
+        turntableServo.setPosition(turntablePos);
+    }
     /*--------------------------------------------------------------------------------------------*/
     /* Set all 4 motor powers to drive straight FORWARD (Ex: +0.10) or REVERSE (Ex: -0.10)        */
     public void driveTrainFwdRev( double motorPower )

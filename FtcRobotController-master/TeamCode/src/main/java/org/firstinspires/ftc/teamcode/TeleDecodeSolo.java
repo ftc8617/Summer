@@ -7,20 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
-import java.util.Locale;
-
 /**
  * TeleOp (with test modes).
  */
-@TeleOp(name="TeleDecode", group="8617")
-public class TeleDecode extends LinearOpMode {
+@TeleOp(name="Solo Decode TeleOp", group="8617")
+public class TeleDecodeSolo extends LinearOpMode {
     boolean gamepad1_triangle_last,   gamepad1_triangle_now   = false;
     boolean gamepad1_circle_last,     gamepad1_circle_now     = false;
     boolean gamepad1_cross_last,      gamepad1_cross_now      = false;
@@ -463,10 +454,10 @@ public class TeleDecode extends LinearOpMode {
         }
     } //encoderReset
     void processIntake(){
-        if (gamepad2.right_trigger >= 0.03) {
-            robot.intakeMotor.setPower(-gamepad2.right_trigger ); //forward
-        } else if (gamepad2.left_trigger >= 0.03) {
-            robot.intakeMotor.setPower(+gamepad2.left_trigger ) ; //reverse
+        if (gamepad1.right_trigger >= 0.03) {
+            robot.intakeMotor.setPower(-gamepad1.right_trigger ); //forward
+        } else if (gamepad1.left_trigger >= 0.03) {
+            robot.intakeMotor.setPower(+gamepad1.left_trigger ) ; //reverse
         } else {
             robot.intakeMotor.setPower(0);
         }
@@ -508,16 +499,16 @@ public class TeleDecode extends LinearOpMode {
         // we are going to need 6 positions for the turntable, and they can just run sequentially
         //one for intake and one for shooting thus they will be 1i,2i,3i, and then 1s,2s,3s
 
-        if (gamepad2_triangle_now){
+        if (gamepad1_triangle_now){
             robot.turntableSlot = 1;
         }
-        if(gamepad2_r_bumper_now && !gamepad2_r_bumper_last){ //right bumper to intake
+        if(gamepad1_r_bumper_now && !gamepad1_r_bumper_last){ //right bumper to intake
             if (robot.turntableSlot >= 3){
                 robot.turntableSlot = 1;
             } else {
                 robot.turntableSlot += 1;
             }
-        } else if (gamepad2_l_bumper_now && !gamepad2_l_bumper_last){ //control shooting turntable with left bumper
+        } else if (gamepad1_l_bumper_now && !gamepad1_l_bumper_last){ //control shooting turntable with left bumper
             if (robot.turntableSlot <= 3) {
                 robot.turntableSlot = 4;
             } else if (robot.turntableSlot <= 5) {
@@ -559,7 +550,7 @@ public class TeleDecode extends LinearOpMode {
 
 
     void processKicker(){
-        if(gamepad2_dpad_down_now) {
+        if(gamepad1_dpad_down_now) {
             robot.flipperUp = true;
         } else {
             robot.flipperUp = false;
