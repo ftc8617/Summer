@@ -306,7 +306,7 @@ public class TeleDecode extends LinearOpMode {
                 valueOut = (6.00 * valueIn) + 4.8925;
         }
 
-        return valueOut/2.0;
+        return valueOut/2.0; //half speed
     } // multSegLinearRot
 
     private double multSegLinearXY( double valueIn ) {
