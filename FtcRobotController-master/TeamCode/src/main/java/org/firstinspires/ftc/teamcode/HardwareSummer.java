@@ -27,7 +27,7 @@ public class HardwareSummer
 {
     //====== REV CONTROL/EXPANSION HUBS =====
     LynxModule controlHub;
-    LynxModule expansionHub;
+//    LynxModule expansionHub;
     public double controlHubV   = 0.0; // Voltage supply of the control hub
     //====== INERTIAL MEASUREMENT UNIT (IMU) =====
     protected BNO055IMU imu    = null;
@@ -118,7 +118,8 @@ public class HardwareSummer
             if(module.isParent()) {
                 controlHub = module;
             } else {
-                expansionHub = module;
+//                expansionHub = module;
+                continue;
             }
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
@@ -239,7 +240,7 @@ public class HardwareSummer
     }
     public void readBulkData() {
         // For MANUAL mode, we must clear the BulkCache once per control cycle
-        expansionHub.clearBulkCache();
+//        expansionHub.clearBulkCache();
         controlHub.clearBulkCache();
         // Get a fresh set of values for this cycle
         //getCurrentPosition() / getTargetPosition() / getTargetPositionTolerance()
