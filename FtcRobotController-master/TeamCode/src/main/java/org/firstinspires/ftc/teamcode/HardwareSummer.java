@@ -137,16 +137,16 @@ public class HardwareSummer
 //        }
 
 
-        // Define and Initialize drivetrain motors
+        // Define and Initialize drivetrain motors...In quadrant ordering order
         frontLeftMotor  = hwMap.get(DcMotorEx.class,"leftFront");  // Control Hub port 1 (REVERSE)
-        frontRightMotor = hwMap.get(DcMotorEx.class,"rightFront"); // Control Hub port 2 (forward)
-        rearLeftMotor   = hwMap.get(DcMotorEx.class,"leftBack");   // Control Hub port 0 (REVERSE)
+        frontRightMotor = hwMap.get(DcMotorEx.class,"rightFront"); // Control Hub port 0 (forward)
+        rearLeftMotor   = hwMap.get(DcMotorEx.class,"leftBack");   // Control Hub port 2 (REVERSE)
         rearRightMotor  = hwMap.get(DcMotorEx.class,"rightBack");  // Control Hub port 3 (forward)
 
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);  // goBilda fwd/rev opposite of Matrix motors!
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        rearLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-        rearRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);  // goBilda fwd/rev opposite of Matrix motors! maybe rev motors reversed too?
+        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        rearLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rearRightMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all drivetrain motors to zero power
         driveTrainMotorsZero();
