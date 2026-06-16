@@ -2,6 +2,7 @@
  weird terminal thing. copy and past the following line if its opening up the weird virtual phone:
  & "C:\Users\garre\AppData\Local\Android\Sdk\platform-tools\adb.exe" connect 192.168.43.1:5555
  NOTE: the space where "garre" is needs to be updated to your own file names.
+ NOTE: Better to unstall the ADB Wi-Fi plugin by Yury Pylkov, restart your device, connect to robot, put in address (192.168.43.1) and bingo bang it auto does it
  * */
 package org.firstinspires.ftc.teamcode;
 
