@@ -574,7 +574,7 @@ public class TimsEyeball extends LinearOpMode {
 //        robot.flipperServo.setPosition(robot.flipperPos);
 //    }
     void processNeck(){
-        robot.neckSwivel = (gamepad1.left_trigger - gamepad1.right_trigger) / 2.0;
+        robot.neckSwivel = ((gamepad1.left_trigger) - (gamepad1.right_trigger)) / 4.0;
         if(gamepad1_r_bumper_now && !gamepad1_r_bumper_last){
             robot.neckPos -= 0.25;
         } else if (gamepad1_l_bumper_now && !gamepad1_l_bumper_last){
