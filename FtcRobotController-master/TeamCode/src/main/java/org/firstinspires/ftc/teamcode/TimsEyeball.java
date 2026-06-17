@@ -8,23 +8,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
-import java.util.Locale;
+import com.qualcomm.robotcore.util.Range;
 
 /**
  * TeleOp (with test modes).
  */
-@TeleOp(name="TeleSummer", group="8617")
-public class TeleSummer extends LinearOpMode {
+@TeleOp(name="Tim's Eyeball", group="8617")
+public class TimsEyeball extends LinearOpMode {
     boolean gamepad1_triangle_last,   gamepad1_triangle_now   = false;
     boolean gamepad1_circle_last,     gamepad1_circle_now     = false;
     boolean gamepad1_cross_last,      gamepad1_cross_now      = false;
@@ -72,7 +63,7 @@ public class TeleSummer extends LinearOpMode {
     Gamepad.RumbleEffect rightDoubleRumble;
 
     /* Declare OpMode members. */
-    HardwareSummer robot = new HardwareSummer();
+    HardwareTimsEyeball robot = new HardwareTimsEyeball();
 
     public void turnToHeading(double targetAngle, double maxPower) {
         double kP = 0.01;
@@ -184,6 +175,7 @@ public class TeleSummer extends LinearOpMode {
 //            processShooter();
 //            processTurntable();
 //            processKicker();
+            processNeck();
 
             // Compute current cycle time
             nanoTimePrev = nanoTimeCurr;
@@ -213,6 +205,9 @@ public class TeleSummer extends LinearOpMode {
 
             telemetry.addData("CycleTime", "%.1f msec (%.1f Hz)", elapsedTime, elapsedHz );
             telemetry.addData("version","103");
+
+            telemetry.addData("CommandedNeckPos", "%.3f counts" , robot.neckServo.getPosition());
+
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
@@ -578,6 +573,21 @@ public class TeleSummer extends LinearOpMode {
 //
 //        robot.flipperServo.setPosition(robot.flipperPos);
 //    }
+    void processNeck(){
+        robot.neckSwivel = (gamepad1.left_trigger - gamepad1.right_trigger) / 2.0;
+        if(gamepad1_r_bumper_now && !gamepad1_r_bumper_last){
+            robot.neckPos -= 0.25;
+        } else if (gamepad1_l_bumper_now && !gamepad1_l_bumper_last){
+            robot.neckPos += 0.25;
+        }
+        if (robot.neckPos > 1.0){
+            robot.neckPos = 1.0;
+        } else if (robot.neckPos < 0.0){
+            robot.neckPos = 0.0;
+        }
+        double neckTotal = Range.clip(robot.neckPos + robot.neckSwivel, 0.0, 1.0);
+        robot.neckServo.setPosition(neckTotal);
+    }
 
 } // Teleop
 

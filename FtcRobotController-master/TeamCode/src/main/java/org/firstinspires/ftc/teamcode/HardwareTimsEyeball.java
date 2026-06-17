@@ -5,13 +5,11 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -23,7 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 /*
  * Hardware class for 2024-2025 IntoTheDeep V2 robot
  */
-public class HardwareSummer
+public class HardwareTimsEyeball
 {
     //====== REV CONTROL/EXPANSION HUBS =====
     LynxModule controlHub;
@@ -88,7 +86,7 @@ public class HardwareSummer
 //    public int          intakeMotorPos  = 0;       //
 //    public double       intakeMotorVelocity  = 0.0;     //
 //
-//    public Servo turntableServo   = null;
+ //    public Servo turntableServo   = null;
 //    public Servo flipperServo = null;
 //
 //
@@ -100,12 +98,17 @@ public class HardwareSummer
 //    public double  flipperPos = 0; // TODO: fill out default flipper position
 //    public boolean flipperUp = true;
 
+    public double neckPos = 0.5; // TODO: fill out default eyeball position
+    public double neckSwivel = 0;
+
+    public Servo neckServo = null;
+
     /* local OpMode members. */
     protected HardwareMap hwMap = null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public HardwareSummer(){
+    public HardwareTimsEyeball(){
     }
 
     /* Initialize standard Hardware interfaces */
@@ -187,6 +190,7 @@ public class HardwareSummer
 //        // Initialize robot hardware (autonomous=true initializes servos)
 //        turntableServo   = hwMap.get(Servo.class,"turntable");// servo port 0 (Expansion Hub)
 //        flipperServo = hwMap.get(Servo.class,"flipper");          // servo port 1 (Expansion Hub)
+        neckServo = hwMap.get(Servo.class,"neck"); // servo port 0 (Control Hub)
 //
 //    } /* init */
 //
