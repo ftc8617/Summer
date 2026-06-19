@@ -11,11 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 /**
  * TeleOp (with test modes).
  */
 @TeleOp(name="Tim's Eyeball", group="8617")
-public class TimsEyeball extends LinearOpMode {
+public class TimsOdomBalls extends LinearOpMode {
     boolean gamepad1_triangle_last,   gamepad1_triangle_now   = false;
     boolean gamepad1_circle_last,     gamepad1_circle_now     = false;
     boolean gamepad1_cross_last,      gamepad1_cross_now      = false;
@@ -62,10 +64,8 @@ public class TimsEyeball extends LinearOpMode {
     Gamepad.RumbleEffect rightRumble;
     Gamepad.RumbleEffect rightDoubleRumble;
 
-    GoBildaPinpointDriver odo;
-
     /* Declare OpMode members. */
-    HardwareTimsEyeball robot = new HardwareTimsEyeball();
+    HardwareTimsOdomBalls robot = new HardwareTimsOdomBalls();
 
     public void turnToHeading(double targetAngle, double maxPower) {
         double kP = 0.01;
@@ -167,7 +167,7 @@ public class TimsEyeball extends LinearOpMode {
                 // Control based on joystick; report the sensed values
                 telemetry.addData("Joystick", "x=%.3f, y=%.3f spin=%.3f",
                         gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x );
-                processStandardDriveMode();
+                //processStandardDriveMode();
             } // processDpadDriveMode
 
             encoderReset();
@@ -178,6 +178,10 @@ public class TimsEyeball extends LinearOpMode {
 //            processTurntable();
 //            processKicker();
             processNeck();
+            keepPosition(0,0,0);
+
+            //offsetTuning();
+            resetOdom();
 
             // Compute current cycle time
             nanoTimePrev = nanoTimeCurr;
@@ -209,6 +213,18 @@ public class TimsEyeball extends LinearOpMode {
             telemetry.addData("version","103");
 
             telemetry.addData("CommandedNeckPos", "%.3f counts" , robot.neckServo.getPosition());
+            robot.odom.update();
+            telemetry.addData("xPos", "%.3f", robot.odom.getPosX());
+            telemetry.addData("yPos", "%.3f", robot.odom.getPosY());
+            telemetry.addData("heading", "%.3f", robot.odom.getHeading()*180/3.14159265);
+//            telemetry.addData("xPeakMax", "%.3f", xTuningMax);
+//            telemetry.addData("xTroughMin", "%.3f", xTuningMin);
+//            telemetry.addData("yPeakMax", "%.3f", yTuningMax);
+//            telemetry.addData("yTroughMin", "%.3f", yTuningMin);
+//            telemetry.addData("xDiff", "%.3f", xTuningMax - xTuningMin);
+//            telemetry.addData("yDiff", "%.3f", yTuningMax - yTuningMin);
+
+
 
             telemetry.update();
 
@@ -590,7 +606,75 @@ public class TimsEyeball extends LinearOpMode {
         double neckTotal = Range.clip(robot.neckPos + robot.neckSwivel, 0.0, 1.0);
         robot.neckServo.setPosition(neckTotal);
     }
+    void resetOdom(){
+        if (gamepad1_triangle_now){
+            robot.odom.resetPosAndIMU();
+        }
+    }
+    double xTuningOffset = robot.xOffset;
+    double yTuningOffset = robot.yOffset;
+    double xTuningMax = -10000;
+    double xTuningMin = 10000;
+    double yTuningMax = -10000;
+    double yTuningMin = 10000;
+    double xTuningDiff;
+    double xTuningDiffLast;
+    double yTuningDiff;
+    double yTuningDiffLast;
+
+    void offsetTuning(){
+        if (gamepad1_square_now && !gamepad1_square_last){
+            while (robot.odom.getHeading()*180/3.14159265 < 1100) { //just above 3 spins
+                robot.driveTrainMotors(-.25, .25, -.25, .25);
+
+                double currX = robot.odom.getPosX();
+                double currY = robot.odom.getPosY();
+
+                if (currX > xTuningMax){
+                    xTuningMax = currX;
+                }
+                if (currX < xTuningMin){
+                    xTuningMin = currX;
+                }
+                if (currY > yTuningMax){
+                    yTuningMax = currY;
+                }
+                if (currY < yTuningMin){
+                    yTuningMin = currY;
+                }
+                robot.odom.update();
+
+
+
+            }
+            xTuningDiff = xTuningMax - xTuningMin;
+            yTuningDiff = yTuningMax - yTuningMin;
+
+            robot.stopMotion();
+
+            robot.odom.setOffsets(xTuningOffset, yTuningOffset);
+        }
+    }
+
+    double zLeway = 5;
+    void keepPosition(double xTarget, double yTarget, double zTarget) {
+        if ((gamepad1.left_stick_y > .15 || gamepad1.left_stick_y < -.15) || (gamepad1.left_stick_x > .15 || gamepad1.left_stick_x < -.15) || (gamepad1.right_stick_y > .15 || gamepad1.right_stick_y < -.15) || (gamepad1.right_stick_x > .15 || gamepad1.right_stick_x < -.15)) {
+            processStandardDriveMode();
+        } else {
+            double currX = robot.odom.getPosX();
+            double currY = robot.odom.getPosY();
+            double currZ = robot.odom.getHeading()*180/3.14159265;
+
+            if (currZ > zTarget + zLeway) {
+                robot.driveTrainMotors(.25, -.25, .25, -.25);
+            }
+            else if (currZ < zTarget - zLeway){
+                robot.driveTrainMotors(-.25, .25, -.25, .25);
+            }
+            else {
+                robot.stopMotion();
+            }
+        }
+    }
 
 } // Teleop
-
-
