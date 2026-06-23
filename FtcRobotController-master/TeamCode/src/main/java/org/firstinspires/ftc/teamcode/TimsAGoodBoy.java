@@ -323,7 +323,7 @@ public class TimsAGoodBoy extends LinearOpMode {
                 valueOut = (6.00 * valueIn) + 4.8925;
         }
 
-        return valueOut/2.0; //half speed
+        return valueOut/1.0; //half speed
     } // multSegLinearRot
 
     private double multSegLinearXY( double valueIn ) {

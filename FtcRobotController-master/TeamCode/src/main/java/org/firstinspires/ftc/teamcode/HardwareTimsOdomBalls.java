@@ -106,8 +106,8 @@ public class HardwareTimsOdomBalls
     protected HardwareMap hwMap = null;
     private ElapsedTime period  = new ElapsedTime();
 
-    public double xOffset = 55.81;
-    public double yOffset = -2.9;
+    public double xOffset = 55.81; //55.81 59.53
+    public double yOffset = -2.9; // -2.9 -4.09
 
     /* Constructor */
     public HardwareTimsOdomBalls(){
