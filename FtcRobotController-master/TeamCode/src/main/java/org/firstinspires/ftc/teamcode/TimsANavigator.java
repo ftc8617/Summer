@@ -147,7 +147,7 @@ public class TimsANavigator extends LinearOpMode {
             //add gameplay functions
             processNeck();
             updateTargetPos();
-            goTo(xTarget,yTarget,zTarget,robot.odom.getPosX(),robot.odom.getPosY(),robot.odom.getHeading(),elapsedTime);
+            goTo(yTarget,xTarget,zTarget,robot.odom.getPosY(),robot.odom.getPosX(),robot.odom.getHeading(),elapsedTime);
             //TODO: x and y are prolly swithced. change the code dummy
             resetOdom();
 
@@ -184,7 +184,11 @@ public class TimsANavigator extends LinearOpMode {
             robot.odom.update();
             telemetry.addData("xPos", "%.3f", robot.odom.getPosX());
             telemetry.addData("yPos", "%.3f", robot.odom.getPosY());
-            telemetry.addData("heading", "%.3f", robot.angleWrap(robot.odom.getHeading()*180/3.14159265));
+            telemetry.addData("zPos", "%.3f", robot.angleWrap(robot.odom.getHeading()*180/3.14159265));
+
+            telemetry.addData("xTarget", "%.3f", xTarget);
+            telemetry.addData("yTarget", "%.3f", yTarget);
+            telemetry.addData("zTarget", "%.3f", zTarget);
 
 
             telemetry.update();
@@ -445,16 +449,19 @@ public class TimsANavigator extends LinearOpMode {
 //
 
         if (gamepad1_square_now && !gamepad1_square_last){
+            if (neckSeeking){
+                robot.neckPos = 0.5;
+            }
             neckSeeking = !neckSeeking;
         }
         if (neckSeeking){
             robot.neckSwivel = 0;
             double headingToDegrees = robot.angleWrap(robot.odom.getHeading() * 180 / 3.14159265);
-            if (Math.abs(headingToDegrees) > (300 / 2)){ //TODO: this may be 330 / 2 ... basically the max range of servo / 2
+            if (Math.abs(headingToDegrees) > (330 / 2)){ //TODO: this may be 330 / 2 ... basically the max range of servo / 2
                 robot.neckPos = 0.5;
             }
             else {
-                robot.neckPos = -headingToDegrees / 300 + 0.5; //TODO: also check this out
+                robot.neckPos = -headingToDegrees / 330 + 0.5; //TODO: also check this out
             }
         }
         else{
@@ -488,24 +495,24 @@ public class TimsANavigator extends LinearOpMode {
         }
         else if (gamepad1_dpad_up_now){
             navigating = true;
-            xTarget = 300; yTarget = 0; zTarget = 180; //TODO: this is gonna be an issue cuz 180 and -180 technicaly don't exist and are the same position. what will it do here? may need to abs smth. idek
+            xTarget = 900; yTarget = 0; zTarget = 0; //TODO: this is gonna be an issue cuz 180 and -180 technicaly don't exist and are the same position. what will it do here? may need to abs smth. idek
         }
-        else if (gamepad1_dpad_right_now){
+        else if (gamepad1_dpad_right_now && !gamepad1_dpad_right_last){
             navigating = true;
-            xTarget = 0; yTarget = 300; zTarget = -90;
+            xTarget = 0; yTarget = -900; zTarget = 90;
         }
         else if( gamepad1_dpad_down_now){
             navigating = true;
-            xTarget = -300; yTarget = 0; zTarget = 0;
+            xTarget = -900; yTarget = 0; zTarget = 0;
         }
-        else if (gamepad1_dpad_left_now) {
+        else if (gamepad1_dpad_left_now && !gamepad1_dpad_left_last) {
             navigating = true;
-            xTarget = 0; yTarget = -300; zTarget = 90;
+            xTarget = 0; yTarget = 900; zTarget = -90;
         }
     }
 
 
-    double xKD = 0.0;
+    double xKD = -0.00;
     double xKP = -0.0007;
     double xKI = 0.0;
     double yKD = 0.0;
@@ -521,7 +528,7 @@ public class TimsANavigator extends LinearOpMode {
     double yErrorIntegral = 0;
     double zErrorIntegral = 0;
     double minJuice = .03;
-    void goTo(double xTarget, double yTarget, double zTarget, double xPos, double yPos, double zPos, double dt) {
+    void goTo(double xTarget, double yTarget, double zTarget, double xPos, double yPos, double zPos, double dt) { //TODO: must swithc the xpos and ypos inputs becuase of weird odom swithc thingy. sucks
         if (!navigating) {
             xErrorIntegral = 0;
             lastXError = 0;
@@ -537,7 +544,8 @@ public class TimsANavigator extends LinearOpMode {
 
             double xError = xTarget - xPos;
             double yError = yTarget - yPos;
-            double zError = zTarget - robot.angleWrap(zPos*180/3.14159265); //TODO: check
+            double zError = zTarget - robot.angleWrap(zPos*180/3.14159265);
+
             // Rate of change of each of the errors. Attempts to prevent overshoot. ROC is short for "Rate Of Change"
             double xErrorROC = (xError - lastXError) / dt;
             double yErrorROC = (yError - lastYError) / dt;
@@ -555,10 +563,10 @@ public class TimsANavigator extends LinearOpMode {
             double rotatedXCorrection = xCorrection * Math.cos(-zPos) - yCorrection * Math.sin(-zPos);
             double rotatedYCorrection = xCorrection * Math.sin(-zPos) + yCorrection * Math.cos(-zPos);
             // Mechanum Wheel Math
-            double frontRightCorrection = xCorrection - yCorrection + zCorrection; //TODO: check if this X-Y CHANGE is right
-            double frontLeftCorrection = xCorrection + yCorrection - zCorrection;
-            double rearRightCorrection = xCorrection + yCorrection + zCorrection;
-            double rearLeftCorrection = xCorrection - yCorrection - zCorrection;
+            double frontRightCorrection = rotatedYCorrection - rotatedXCorrection + zCorrection; //TODO: check if this X-Y CHANGE is right... NOTE: it wasnt
+            double frontLeftCorrection = rotatedYCorrection + rotatedXCorrection - zCorrection;
+            double rearRightCorrection = rotatedYCorrection + rotatedXCorrection + zCorrection;
+            double rearLeftCorrection = rotatedYCorrection - rotatedXCorrection - zCorrection;
 
             // If the magnitude of the power is too small to move the robot, kill it to 0
 //            if (Math.abs(frontRightCorrection) < minJuice) {
